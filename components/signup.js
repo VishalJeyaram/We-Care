@@ -90,7 +90,7 @@ export default class Signup extends Component {
         <Text 
           style={styles.loginText}
           onPress={() => this.props.navigation.navigate("Login")}>
-          Already Registered? Click here to login
+          Already Registered? Click here to login!
         </Text>                          
       </View>
     );
