@@ -24,6 +24,15 @@ function HomeScreen({ navigation }) {
                 >
                 <Text> Chat with a Doctor </Text>
                 </TouchableOpacity>
+
+                <View style={styles.profile}>
+                    <TouchableOpacity
+                        title="View Profile"
+                        onPress={() => navigation.navigate('ProfileScreen')}
+                        style={styles.button}>
+                        <Text> View Profile </Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </ImageBackground>
     );
@@ -53,6 +62,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'tomato',
         height: 100,
         width: 100
+    },
+    profile: {
+        position: 'absolute',
+        top: 500,
     }
 })
 

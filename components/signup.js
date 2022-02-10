@@ -1,5 +1,8 @@
-import React, { Component } from "react";
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from "react-native";
+import React, { Component, useState } from "react";
+import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator, Pressable } from "react-native";
+// import DropDownPicker from 'react-native-dropdown-picker';
+import {Picker} from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import auth from "../database/firebase";
 import * as firebase from "firebase/auth";
 
@@ -12,18 +15,39 @@ export default class Signup extends Component {
       displayName: "",
       email: "", 
       password: "",
-      isLoading: false
+      gender: "",
+      birthday: new Date(),
+      isLoading: false,
+      isBirthdayModalOpen: false,
+      test: false,
     }
   }
 
-  updateInputVal = (val, prop) => {
+  updateInputVal(val, prop) {
     const state = this.state;
     state[prop] = val;
     this.setState(state);
   }
 
-  registerUser = () => {
-    if (this.state.email === "" && this.state.password === "") {
+  updateBirthday(val) {
+    this.setState({
+      birthday: new Date(val["nativeEvent"]["timestamp"]),
+      isBirthdayModalOpen: false,
+      test: true
+    });
+  }
+
+  showBirthdayModal() {
+    this.setState({
+      isBirthdayModalOpen: true,
+      isBirthdayInitialised: true
+    });
+    console.log(this.state.test);
+  }
+
+  registerUser() {
+    if (this.state.displayName == "" || this.state.email == ""
+    || this.state.password == "" || this.state.gender == "" || !this.state.isBirthdayInitialised) {
       Alert.alert("Enter details to sign up!")
     } else {
       this.setState({
@@ -33,7 +57,9 @@ export default class Signup extends Component {
       .createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
       .then((res) => {
         firebase.updateProfile(res.user, {
-          displayName: this.state.displayName
+          displayName: this.state.displayName,
+          gender: this.state.gender,
+          birthday: this.state.birthday
         });
         console.log("User registered successfully!");
         this.setState({
@@ -80,10 +106,37 @@ export default class Signup extends Component {
           onChangeText={(val) => this.updateInputVal(val, "password")}
           maxLength={15}
           secureTextEntry={true}
-        />   
+        />
+        <View style={styles.genderInputStyle}>
+          <Text>Gender</Text>
+          <Picker
+            selectedValue={this.state.gender}
+            onValueChange={(val) => this.updateInputVal(val, "gender")}>
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label="Others" value="Others" />
+            <Picker.Item label="Prefer not to say" value="Prefer not to say" />
+          </Picker>
+        </View>
+
+        <Pressable onPress={this.showBirthdayModal.bind(this)} style={styles.inputStyle}>
+          {this.state.isBirthdayInitialised && (<Text>{this.state.birthday.toDateString()}</Text>)}
+          {!this.state.isBirthdayInitialised && (<Text style={styles.placeholder}>Birthday</Text>)}
+        </Pressable>
+        {this.state.isBirthdayModalOpen && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={this.state.birthday}
+            mode="date"
+            is24Hour={true}
+            display="default"
+            onChange={(val) => this.updateBirthday(val)}
+          />
+        )}
+
         <Button
           color="#3740FE"
-          title="Signup"
+          title="Sign up"
           onPress={() => this.registerUser()}
         />
 
@@ -114,11 +167,21 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderBottomWidth: 1
   },
+  genderInputStyle: {
+    width: "100%",
+    marginBottom: 15,
+    alignSelf: "center",
+    borderColor: "#ccc",
+    borderBottomWidth: 1
+  },
   loginText: {
     color: "#3740FE",
     marginTop: 25,
     textAlign: "center"
   },
+  placeholder: {
+    color: "#A9A9AC",
+  }, 
   preloader: {
     left: 0,
     right: 0,

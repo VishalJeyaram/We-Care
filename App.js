@@ -7,10 +7,10 @@ import HomeScreen from './Screens/HomeScreen';
 import VitalsInput from './Screens/VitalsInput';
 import MessageScreen from './Screens/MessagesScreen';
 import ChatScreen from './Screens/ChatScreen'
+import ProfileScreen from './Screens/ProfileScreen'
 
 import Signup from './components/signup';
 import Login from './components/login';
-import Dashboard from './components/dashboard';
 
 const Stack = createNativeStackNavigator();
 function MyStack() {
@@ -59,6 +59,10 @@ function MyStack() {
         <Stack.Screen
             name = 'ChatScreen'
             component={ChatScreen}
+        />
+        <Stack.Screen
+            name = 'ProfileScreen'
+            component={ProfileScreen}
         />
         </Stack.Navigator>
     );
